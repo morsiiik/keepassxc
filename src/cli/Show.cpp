@@ -32,6 +32,10 @@ const QCommandLineOption Show::ProtectedAttributesOption =
                                      << "show-protected",
                        QObject::tr("Show the protected attributes in clear text."));
 
+const QCommandLineOption Show::AllAttributesOption =
+    QCommandLineOption(QStringList() << "all",
+                       QObject::tr("Show all the attributes of the entry."));
+
 const QCommandLineOption Show::AttachmentsOption =
     QCommandLineOption(QStringList() << "show-attachments", QObject::tr("Show the attachments of the entry."));
 
@@ -64,6 +68,7 @@ int Show::executeWithDatabase(QSharedPointer<Database> database, QSharedPointer<
     const QString& entryPath = args.at(1);
     bool showTotp = parser->isSet(Show::TotpOption);
     bool showProtectedAttributes = parser->isSet(Show::ProtectedAttributesOption);
+    bool showAllAttributes = parser->isSet(Show::AllAttributesOption);
     QStringList attributes = parser->values(Show::AttributesOption);
 
     Entry* entry = database->rootGroup()->findEntryByPath(entryPath);
