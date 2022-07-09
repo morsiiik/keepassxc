@@ -55,6 +55,7 @@ Show::Show()
     options.append(Show::TotpOption);
     options.append(Show::AttributesOption);
     options.append(Show::ProtectedAttributesOption);
+    options.append(Show::AllAttributesOption);
     options.append(Show::AttachmentsOption);
     positionalArguments.append({QString("entry"), QObject::tr("Name of the entry to show."), QString("")});
 }
@@ -82,13 +83,21 @@ int Show::executeWithDatabase(QSharedPointer<Database> database, QSharedPointer<
         return EXIT_FAILURE;
     }
 
-    bool showAttributeNames = false;
+    bool attributesWereSpecified = true;
     if (showAllAttributes) {
-        showAttributeNames = true;
-        attributes = entry->attributes()->keys();
+        attributesWereSpecified = false;
+        attributes = EntryAttributes::DefaultAttributes;
+        // Adding the custom attributes after the default attributes so that
+        // the default attributes are always shown first.
+        for (QString attributeName: entry->attributes()->keys()) {
+            if (EntryAttributes::DefaultAttributes.contains(attributeName)) {
+                continue;
+            }
+            attributes.append(attributeName);
+        }
     } else if (attributes.isEmpty() && !showTotp) {
         // If no attributes are specified, output the default attribute set.
-        showAttributeNames = true;
+        attributesWereSpecified = false;
         attributes = EntryAttributes::DefaultAttributes;
     }
 
@@ -108,10 +117,10 @@ int Show::executeWithDatabase(QSharedPointer<Database> database, QSharedPointer<
             continue;
         }
         QString canonicalName = attrs[0];
-        if (showAttributeNames) {
+        if (!attributesWereSpecified) {
             out << canonicalName << ": ";
         }
-        if (entry->attributes()->isProtected(canonicalName) && showAttributeNames && !showProtectedAttributes) {
+        if (entry->attributes()->isProtected(canonicalName) && !attributesWereSpecified && !showProtectedAttributes) {
             out << "PROTECTED" << endl;
         } else {
             out << entry->resolveMultiplePlaceholders(entry->attributes()->value(canonicalName)) << endl;
