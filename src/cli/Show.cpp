@@ -82,9 +82,13 @@ int Show::executeWithDatabase(QSharedPointer<Database> database, QSharedPointer<
         return EXIT_FAILURE;
     }
 
-    // If no attributes specified, output the default attribute set.
-    bool showDefaultAttributes = attributes.isEmpty() && !showTotp;
-    if (showDefaultAttributes) {
+    bool showAttributeNames = false;
+    if (showAllAttributes) {
+        showAttributeNames = true;
+        attributes = entry->attributes()->keys();
+    } else if (attributes.isEmpty() && !showTotp) {
+        // If no attributes are specified, output the default attribute set.
+        showAttributeNames = true;
         attributes = EntryAttributes::DefaultAttributes;
     }
 
@@ -104,10 +108,10 @@ int Show::executeWithDatabase(QSharedPointer<Database> database, QSharedPointer<
             continue;
         }
         QString canonicalName = attrs[0];
-        if (showDefaultAttributes) {
+        if (showAttributeNames) {
             out << canonicalName << ": ";
         }
-        if (entry->attributes()->isProtected(canonicalName) && showDefaultAttributes && !showProtectedAttributes) {
+        if (entry->attributes()->isProtected(canonicalName) && showAttributeNames && !showProtectedAttributes) {
             out << "PROTECTED" << endl;
         } else {
             out << entry->resolveMultiplePlaceholders(entry->attributes()->value(canonicalName)) << endl;
