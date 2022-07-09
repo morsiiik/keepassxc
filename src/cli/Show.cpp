@@ -33,8 +33,7 @@ const QCommandLineOption Show::ProtectedAttributesOption =
                        QObject::tr("Show the protected attributes in clear text."));
 
 const QCommandLineOption Show::AllAttributesOption =
-    QCommandLineOption(QStringList() << "all",
-                       QObject::tr("Show all the attributes of the entry."));
+    QCommandLineOption(QStringList() << "all", QObject::tr("Show all the attributes of the entry."));
 
 const QCommandLineOption Show::AttachmentsOption =
     QCommandLineOption(QStringList() << "show-attachments", QObject::tr("Show the attachments of the entry."));
@@ -89,7 +88,7 @@ int Show::executeWithDatabase(QSharedPointer<Database> database, QSharedPointer<
         attributes = EntryAttributes::DefaultAttributes;
         // Adding the custom attributes after the default attributes so that
         // the default attributes are always shown first.
-        for (QString attributeName: entry->attributes()->keys()) {
+        for (QString attributeName : entry->attributes()->keys()) {
             if (EntryAttributes::DefaultAttributes.contains(attributeName)) {
                 continue;
             }
