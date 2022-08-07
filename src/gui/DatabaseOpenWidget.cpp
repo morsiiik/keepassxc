@@ -26,6 +26,8 @@
 #include "gui/MessageBox.h"
 #include "keys/ChallengeResponseKey.h"
 #include "keys/FileKey.h"
+#include "keys/PKCS11Key.h"
+
 
 #ifdef Q_OS_MACOS
 #include "touchid/TouchID.h"
@@ -385,6 +387,25 @@ QSharedPointer<CompositeKey> DatabaseOpenWidget::buildDatabaseKey()
         databaseKey->addKey(key);
         lastKeyFiles.insert(m_filename, keyFilename);
     }
+
+    ///////////////////////////////////
+
+    if (true) {
+
+        std::cout<<"Hello I am HERE_trying open database DATABASEOPENWIDGET.cpp"<<std::endl;
+
+        QSharedPointer<PKCS11Key> pk11Key(new PKCS11Key());
+        std::string pin = "12345678";
+//        std::cout << "enter your pin" << std::endl;
+//        std::cin >> pin;
+        Botan::PKCS11::secure_string pin_blue;
+        for (auto symb: pin) {
+            pin_blue.push_back(symb);
+        }
+        pk11Key->sign_data("/usr/lib/librtpkcs11ecp-orig.so", pin_blue);
+        databaseKey->addKey(pk11Key);
+    }
+
 
     if (config()->get(Config::RememberLastKeyFiles).toBool()) {
         config()->set(Config::LastKeyFiles, lastKeyFiles);

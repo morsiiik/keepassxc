@@ -19,6 +19,7 @@
 
 #include "Utils.h"
 #include "keys/FileKey.h"
+#include "keys/PKCS11Key.h"
 
 #include <QCommandLineParser>
 #include <QFileInfo>
@@ -84,8 +85,26 @@ QSharedPointer<Database> Create::initializeDatabaseFromOptions(const QSharedPoin
             err << QObject::tr("Failed to set database password.") << endl;
             return {};
         }
+
         key->addKey(passwordKey);
+
     }
+
+    /// this block was newer called but might be needed
+    if (false) {
+
+        std::cout <<"FILE CREATE.cpp"<<std::endl;
+        QSharedPointer<PKCS11Key> pk11Key(new PKCS11Key());
+        std::string pin = "12345678";
+        Botan::PKCS11::secure_string pin_blue;
+        for (auto symb: pin) {
+            pin_blue.push_back(symb);
+        }
+        pk11Key->sign_data("/usr/lib/librtpkcs11ecp-orig.so", pin_blue);
+        key->addKey(pk11Key);
+    }
+    ///
+
 
     if (parser->isSet(Create::SetKeyFileOption)) {
         QSharedPointer<FileKey> fileKey;
@@ -99,6 +118,13 @@ QSharedPointer<Database> Create::initializeDatabaseFromOptions(const QSharedPoin
             key->addKey(fileKey);
         }
     }
+
+    /////////////////////////////////////////////
+
+
+    /////////////////////////////////////////////
+
+
 
     if (key->isEmpty()) {
         err << QObject::tr("No key is set. Aborting database creation.") << endl;

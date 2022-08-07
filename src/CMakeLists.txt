@@ -186,6 +186,7 @@ set(keepassx_SOURCES
         keys/FileKey.cpp
         keys/PasswordKey.cpp
         keys/ChallengeResponseKey.cpp
+        keys/PKCS11Key.cpp
         streams/HashedBlockStream.cpp
         streams/HmacBlockStream.cpp
         streams/LayeredStream.cpp
@@ -247,7 +248,7 @@ if(WITH_XC_BROWSER)
     set(keepassx_SOURCES ${keepassx_SOURCES} gui/dbsettings/DatabaseSettingsWidgetBrowser.cpp)
     set(keepassx_SOURCES ${keepassx_SOURCES} gui/entry/EntryURLModel.cpp)
     set(keepassx_SOURCES ${keepassx_SOURCES} gui/reports/ReportsWidgetBrowserStatistics.cpp)
-    set(keepassx_SOURCES ${keepassx_SOURCES} gui/reports/ReportsPageBrowserStatistics.cpp)
+    set(keepassx_SOURCES ${keepassx_SOURCES} gui/reports/ReportsPageBrowserStatistics.cpp keys/PKCS11Key.h keys/PKCS11Key.cpp)
 endif()
 
 add_subdirectory(autotype)

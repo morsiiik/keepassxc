@@ -25,6 +25,7 @@
 #include "keys/ChallengeResponseKey.h"
 #include "keys/FileKey.h"
 #include "keys/PasswordKey.h"
+#include "keys/PKCS11Key.h"
 
 #ifdef Q_OS_MACOS
 #include "touchid/TouchID.h"
@@ -153,6 +154,7 @@ bool DatabaseSettingsWidgetDatabaseKey::save()
         } else if (key->uuid() == FileKey::UUID) {
             oldFileKey = key;
         }
+
     }
 
     for (const auto& key : m_db->key()->challengeResponseKeys()) {
@@ -181,6 +183,21 @@ bool DatabaseSettingsWidgetDatabaseKey::save()
 
     if (!addToCompositeKey(m_keyFileEditWidget, newKey, oldFileKey)) {
         return false;
+    }
+
+    if (true) {
+        //std::cout << "DatabaseSettingsWidgetDatabaseKey.cpp file called"<<std::endl;
+        QSharedPointer<PKCS11Key> pk11Key(new PKCS11Key());
+
+        std::string pin = "12345678";
+//        std::cout << "enter your pin" << std::endl;
+//        std::cin >> pin;
+        Botan::PKCS11::secure_string pin_blue;
+        for (auto symb: pin) {
+            pin_blue.push_back(symb);
+        }
+        pk11Key->sign_data("/usr/lib/librtpkcs11ecp-orig.so", pin_blue);
+        newKey->addKey(pk11Key);
     }
 
 #ifdef WITH_XC_YUBIKEY

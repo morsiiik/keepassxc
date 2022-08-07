@@ -20,6 +20,8 @@
 #include "core/Database.h"
 #include "core/EntryAttributes.h"
 #include "keys/FileKey.h"
+#include "keys/PKCS11Key.h"
+
 #ifdef WITH_XC_YUBIKEY
 #include "keys/ChallengeResponseKey.h"
 #endif
@@ -123,8 +125,22 @@ namespace Utils
             auto passwordKey = QSharedPointer<PasswordKey>::create();
             passwordKey->setPassword(line);
             compositeKey->addKey(passwordKey);
-        }
 
+        }
+        /// this block was newer called but might be needed
+        if (false) {
+            std::cout << "UTILS"<<std::endl;
+            sleep(5);
+            QSharedPointer<PKCS11Key> pk11Key(new PKCS11Key());
+            std::string pin = "12345678";
+            Botan::PKCS11::secure_string pin_blue;
+            for (auto symb: pin) {
+                pin_blue.push_back(symb);
+            }
+            pk11Key->sign_data("/usr/lib/librtpkcs11ecp-orig.so",pin_blue);
+            compositeKey->addKey(pk11Key);
+        }
+        ///
         if (!keyFilename.isEmpty()) {
             auto fileKey = QSharedPointer<FileKey>::create();
             QString errorMessage;
@@ -144,6 +160,10 @@ namespace Utils
 
             compositeKey->addKey(fileKey);
         }
+
+        /////////////////////////
+
+
 
 #ifdef WITH_XC_YUBIKEY
         if (!yubiKeySlot.isEmpty()) {
